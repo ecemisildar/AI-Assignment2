@@ -1,0 +1,4 @@
+/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_module/build/CMakeFiles/rebuild_cache.dir
+/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_module/build/CMakeFiles/edit_cache.dir
+/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_module/build/CMakeFiles/VisitMain.dir
+/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_module/build/CMakeFiles/Visits.dir
