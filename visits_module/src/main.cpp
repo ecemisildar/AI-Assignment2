@@ -21,6 +21,7 @@ int main(int argc, char **argv) {
         return 1;
     }
     string parameters[] = {0};
+    cout << "main" << endl;
     visitExample.loadSolver(parameters,1);
     map<string,double> initialState;
 
@@ -47,6 +48,9 @@ int main(int argc, char **argv) {
         initialState["(triggered " + region[i] + " " + region[j]+")"] = 0;
        }
     }
-    }   
+    }
+
+    visitExample.callExternalSolver(initialState, false);
+
     return 0;
 }

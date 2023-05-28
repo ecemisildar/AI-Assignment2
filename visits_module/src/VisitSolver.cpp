@@ -64,8 +64,8 @@ void VisitSolver::loadSolver(string *parameters, int n){
   affected = list<string>(x,x+1);
   dependencies = list<string>(y,y+2);
 
-  string waypoint_file = "/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_domain/waypoint.txt";   // change this to the correct path
-  string edges_file = "/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_domain/edges.txt";
+  string waypoint_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/waypoint.txt";   // change this to the correct path
+  string edges_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/edges.txt";
 
 
   parseWaypoint(waypoint_file);
@@ -75,12 +75,15 @@ void VisitSolver::loadSolver(string *parameters, int n){
 
 map<string,double> VisitSolver::callExternalSolver(map<string,double> initialState,bool isHeuristic){
 
+  cout << "external called" << endl;
+
   map<string, double> toReturn;
   map<string, double>::iterator iSIt = initialState.begin();
   map<string, double>::iterator isEnd = initialState.end();
   double dummy;
   double act_cost;
-  string region_file = "/home/ecem/Documents/ai2/AI-Assignment2/AI-Assignment2/visits_domain/region_poses.txt";
+  string region_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/region_poses.txt";
+  ifstream regionData(region_file);
 
 
 
@@ -100,51 +103,55 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
     function.erase(function.length()-1,function.length());
     int n=function.find(" ");
 
+    cout << "external for loop" << endl;
+
     if(n!=-1){
+
+      cout << "external n cond" << endl;
       string arg=function;
       string tmp = function.substr(n+1,5);
 
       function.erase(n,function.length()-1);
       arg.erase(0,n+1);
       if(function=="triggered"){
+        cout << "external triggered" << endl;
         trigger[arg] = value>0?1:0;
         if (value>0){
 
       string from = tmp.substr(0,2);   // from and to are regions, need to extract wps (poses)
       string to = tmp.substr(3,2);
+      cout << "external inside triggered" << endl;
 
             int counter = 0;
      //Open the file
-      ifstream regionData(region_file);
+  
       if (regionData.is_open()){
-        cout << "hi" << endl;
         while (getline(regionData,line) && counter != 2){
          curr=line.find(" [");
          if (line.substr(0,curr).c_str() == from){
             curr=curr+1;
             next=line.find("]",curr);
 
-            waypoint_from = line.substr(curr,next-curr).c_str();
+            waypoint_from = line.substr(curr+1,next-curr-1).c_str();
             counter += 1;
          }
          if(line.substr(0,curr).c_str() == to){
             curr=curr+1;
             next=line.find("]",curr);
 
-            waypoint_to = line.substr(curr,next-curr).c_str();
+            waypoint_to = line.substr(curr+1,next-curr-1).c_str();
             counter += 1;
             
          }
 
       }
-      std::cout << waypoint_from << "" << waypoint_to << endl;
+      std::cout << waypoint_from << " " << waypoint_to << endl;
       // Close the file
       regionData.close();
       //distance_euc(from, to);
 
       
         }
-  
 
 
 
@@ -155,9 +162,13 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 }else{
   if(function=="dummy"){
     dummy = value;
+    cout << "external dummy" << endl;
+    cout << "value: " << value << endl;
 
   }else if(function=="act-cost"){
     act_cost = value;
+    cout << "external act-cost" << endl;
+    cout << "value: " << value << endl;
                  } //else if(function=="dummy1"){
                     //duy = value;              
                     ////cout << parameter << " " << value << endl;
@@ -176,6 +187,8 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
               return toReturn;
             }
+
+
 
             list<string> VisitSolver::getParameters(){
 
