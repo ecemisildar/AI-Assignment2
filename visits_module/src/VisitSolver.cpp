@@ -35,7 +35,7 @@
 using namespace std;
 using namespace arma;
 
-string edges_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/edges.txt";
+string edges_file = "./visits_domain/edges.txt";
 
 
 
@@ -67,7 +67,7 @@ void VisitSolver::loadSolver(string *parameters, int n){
   affected = list<string>(x,x+1);
   dependencies = list<string>(y,y+2);
 
-  string waypoint_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/waypoint.txt";   // change this to the correct path
+  string waypoint_file = "./visits_domain/waypoint.txt";   // change this to the correct path
 
 
   parseWaypoint(waypoint_file);
@@ -84,7 +84,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
   map<string, double>::iterator isEnd = initialState.end();
   double dummy;
   double act_cost;
-  string region_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/region_poses.txt";
+  string region_file = "./visits_domain/region_poses.txt";
   ifstream regionData(region_file);
 
 
@@ -226,9 +226,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
          }
 
          double VisitSolver::calculateExtern(double external, double total_cost){
-       //float random1 = static_cast <float> (rand())/static_cast <float>(RAND_MAX);
-       double cost = 2;//random1;
-       return cost;
+       return external;
      }
 
      void VisitSolver::createEdges(string edges_file){

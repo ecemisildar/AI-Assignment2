@@ -8,6 +8,7 @@
 
 (:predicates
 		(robot_in ?v - robot ?r - region) (visited ?r - region )
+		(at-assignment ?r - region)
 	      
 )
 
@@ -15,13 +16,24 @@
 		(act-cost) (triggered ?from ?to - region) (dummy) (collected)
 )
 
+;(:action take-assignment
+;        :parameters (?v - robot ?r - region)
+;        :precondition (and (robot_in ?v ?r)
+;        		(at-assignment ?r))
+;        :effect (and (increase (collected) 1)
+ ;       	     (not (at-assignment ?r))
+        	
+;		)
+ ;   )
+
+
+
 (:durative-action goto_region
 		:parameters (?v - robot ?from ?to - region)
 		:duration (= ?duration 100)
 		:condition (and (at start (robot_in ?v ?from)))
 	        :effect (and (at start (not (robot_in ?v ?from))) (at start (increase (triggered ?from ?to) 1))
 		(at end (robot_in ?v ?to)) (at end (assign (triggered ?from ?to) 0)) (at end (visited ?to)) 	
-		(at end (increase (collected) 1))
                 (at end (increase (act-cost) (dummy))))
 )
 

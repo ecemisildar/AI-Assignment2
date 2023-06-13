@@ -6,6 +6,11 @@
 )
 (:init
     (robot_in R2D2 r0)
+    
+    ;(at-assignment r1)
+    ;(at-assignment r2)
+    ;(at-assignment r3)
+    ;(at-assignment r4)
    
    
     (= (act-cost) 0)
@@ -16,7 +21,7 @@
 )
 
 (:goal 
-     (and (<= (collected) 3) 
+     (and ;(<= (collected) 2) 
      	(robot_in R2D2 r5)
      )
 )
