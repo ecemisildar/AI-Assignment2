@@ -11,6 +11,7 @@
 		(at-assignment ?a - assignment ?r - region)
 		(carry ?a - assignment) 
 		(free ?v - robot)
+		(visited ?r - region )
 	      
 )
 
@@ -26,7 +27,8 @@
 	        		(at start (not (robot_in ?v ?from))) 
 	        		(at start (increase (triggered ?from ?to) 1))
 				(at end (robot_in ?v ?to)) 
-				(at end (assign (triggered ?from ?to) 0))  	
+				(at end (assign (triggered ?from ?to) 0))  
+				(at end (visited ?to)) 		
                 		(at end (increase (act-cost) (dummy))))
 )
 
@@ -35,6 +37,7 @@
 		:parameters (?v - robot ?a - assignment ?r - region)
 		:precondition (and 
 				(at-assignment ?a ?r) 
+				(robot_in ?v ?r)
 				(free ?v))
 		:effect (and 
 				(carry ?a) 
