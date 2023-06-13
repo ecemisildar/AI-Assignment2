@@ -25,6 +25,7 @@
 #include <cstdlib>
 #include <sstream>
 #include <fstream>
+#include <iostream>
 #include <vector>
 #include <algorithm>
 
@@ -33,6 +34,8 @@
 
 using namespace std;
 using namespace arma;
+
+string edges_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/edges.txt";
 
 
 
@@ -65,7 +68,6 @@ void VisitSolver::loadSolver(string *parameters, int n){
   dependencies = list<string>(y,y+2);
 
   string waypoint_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/waypoint.txt";   // change this to the correct path
-  string edges_file = "/home/carmine/Scrivania/A.I/Assignment_II/visits_domain/edges.txt";
 
 
   parseWaypoint(waypoint_file);
@@ -122,7 +124,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
       string to = tmp.substr(3,2);
       cout << "external inside triggered" << endl;
 
-            int counter = 0;
+      int counter = 0;
      //Open the file
   
       if (regionData.is_open()){
@@ -148,14 +150,13 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
       std::cout << waypoint_from << " " << waypoint_to << endl;
       // Close the file
       regionData.close();
-      //distance_euc(from, to);
 
       
         }
 
 
 
-     // distance_euc(from, to);
+    dummy = distance_euc(waypoint_from, waypoint_to, edges_file);
 
     }
   }
@@ -251,7 +252,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
             if (waypoint1 != waypoint2) {
               float distance = sqrt(std::pow((poses1[0]-poses2[0]),2)+ std::pow((poses1[1]-poses2[1]),2));
                 if (distance < 1.5) {
-                    edgesData << waypoint1 << ", " << waypoint2 << " - " << distance << endl;   
+                    edgesData << waypoint1 << " " << waypoint2 << " " << distance << endl;   
                 }
             }
          }
@@ -302,8 +303,55 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
 
 
-  //void VisitSolver::distance_euc( string from, string to){
-  //} 
+double VisitSolver::distance_euc( string from, string to, string edges_file){
+
+  // first dumb implementation
+
+  bool found = 0;
+  string prev = to, tmp_init, init = to, middle_wp;
+  double tmp_dist = 0, final_dist = 0;
+  ifstream edgesFile(edges_file);
+
+       if (edgesFile.is_open()){
+
+        while (found != 1){
+
+          // fscanf(edgesFile, "%s %s %f", tmp_init, middle_wp, &tmp_dist);
+
+          edgesFile >> tmp_init >> middle_wp >> tmp_dist;
+
+          //cout << tmp_init << " " << middle_wp << " " << tmp_dist << endl;
+          //sleep(1);
+          //cout << tmp_init << " " << init <<endl;
+
+
+
+          if(tmp_init == init){
+            cout << tmp_init << "Found! " << endl;
+            if(middle_wp == from){
+              found = 1;
+              final_dist += tmp_dist;
+              cout << middle_wp << " " << final_dist << endl;
+            }
+            else if(middle_wp != prev && tmp_dist > 1){
+              cout << tmp_init << " " << tmp_dist << endl;
+              prev = tmp_init;
+              init = middle_wp;
+              cout << middle_wp << "Selected! " << endl;
+              edgesFile.seekg(0);
+              final_dist += tmp_dist;
+            }
+          }
+       }
+       edgesFile.close();
+     }
+
+
+     return final_dist;
+  
+  
+  
+ } 
 
 
 

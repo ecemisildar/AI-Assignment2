@@ -42,7 +42,7 @@ public:
     virtual  list<string> getDependencies();
     map<string, vector<int>> fixed_waypoint;
     
-    void distance_euc( string from, string to);
+    double distance_euc( string from, string to, string edges_file);
     void parseWaypoint(string waypoint_file);
     void createEdges(string edges_file);
      

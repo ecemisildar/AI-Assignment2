@@ -12,7 +12,7 @@
 )
 
 (:functions 
-		(act-cost) (triggered ?from ?to - region) (dummy)
+		(act-cost) (triggered ?from ?to - region) (dummy) (collected)
 )
 
 (:durative-action goto_region
@@ -21,13 +21,12 @@
 		:condition (and (at start (robot_in ?v ?from)))
 	        :effect (and (at start (not (robot_in ?v ?from))) (at start (increase (triggered ?from ?to) 1))
 		(at end (robot_in ?v ?to)) (at end (assign (triggered ?from ?to) 0)) (at end (visited ?to)) 	
+		(at end (increase (collected) 1))
                 (at end (increase (act-cost) (dummy))))
 )
 
 
-;;(:durative-action localize
-;; ...................
-;;)
+
 
 
 
