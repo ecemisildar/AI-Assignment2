@@ -326,16 +326,19 @@ double VisitSolver::distance_euc( string from, string to, string edges_file){
 
           if(tmp_init == init){
             cout << tmp_init << "Found! " << endl;
+            sleep(2);
             if(middle_wp == from){
               found = 1;
               final_dist += tmp_dist;
               cout << middle_wp << " " << final_dist << endl;
+              sleep(2);
             }
             else if(middle_wp != prev && tmp_dist > 1){
               cout << tmp_init << " " << tmp_dist << endl;
               prev = tmp_init;
               init = middle_wp;
               cout << middle_wp << "Selected! " << endl;
+              sleep(2);
               edgesFile.seekg(0);
               final_dist += tmp_dist;
             }
