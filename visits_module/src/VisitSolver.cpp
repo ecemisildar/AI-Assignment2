@@ -28,6 +28,8 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+#include <unordered_map>
+
 
 #include "armadillo"
 #include <initializer_list>
@@ -35,8 +37,9 @@
 using namespace std;
 using namespace arma;
 
-string edges_file = "./visits_domain/edges.txt";
+unordered_map<string,vector<pair<string,double>>> graph;
 
+string edges_file = "./visits_domain/edges.txt";
 
 
     //map <string, vector<double> > region_mapping;
@@ -105,24 +108,24 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
     function.erase(function.length()-1,function.length());
     int n=function.find(" ");
 
-    cout << "external for loop" << endl;
+    //cout << "external for loop" << endl;
 
     if(n!=-1){
 
-      cout << "external n cond" << endl;
+      //cout << "external n cond" << endl;
       string arg=function;
       string tmp = function.substr(n+1,5);
 
       function.erase(n,function.length()-1);
       arg.erase(0,n+1);
       if(function=="triggered"){
-        cout << "external triggered" << endl;
+        //cout << "external triggered" << endl;
         trigger[arg] = value>0?1:0;
         if (value>0){
 
       string from = tmp.substr(0,2);   // from and to are regions, need to extract wps (poses)
       string to = tmp.substr(3,2);
-      cout << "external inside triggered" << endl;
+      //cout << "external inside triggered" << endl;
 
       int counter = 0;
      //Open the file
@@ -156,20 +159,20 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
 
 
-    dummy = distance_euc(waypoint_from, waypoint_to, edges_file);
+    dummy = distance_euc(waypoint_from, waypoint_to, graph);
 
     }
   }
 }else{
   if(function=="dummy"){
     dummy = value;
-    cout << "external dummy" << endl;
-    cout << "value: " << value << endl;
+    //cout << "external dummy" << endl;
+    //cout << "value: " << value << endl;
 
   }else if(function=="act-cost"){
     act_cost = value;
-    cout << "external act-cost" << endl;
-    cout << "value: " << value << endl;
+    //cout << "external act-cost" << endl;
+    //cout << "value: " << value << endl;
                  } //else if(function=="dummy1"){
                     //duy = value;              
                     ////cout << parameter << " " << value << endl;
@@ -237,10 +240,10 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
        if (edgesData.is_open()){
 
         for (auto pair1 : fixed_waypoint) {
-        const std::string& waypoint1 = pair1.first;
-        const std::vector<int>& poses1 = pair1.second;
+          const std::string& waypoint1 = pair1.first;
+          const std::vector<int>& poses1 = pair1.second;
 
-        for (auto pair2 : fixed_waypoint) {
+          for (auto pair2 : fixed_waypoint) {
             const std::string& waypoint2 = pair2.first;
             const std::vector<int>& poses2 = pair2.second;
 
@@ -249,22 +252,33 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
             if (waypoint1 != waypoint2) {
               float distance = sqrt(std::pow((poses1[0]-poses2[0]),2)+ std::pow((poses1[1]-poses2[1]),2));
-                if (distance < 1.5) {
+                if (distance == 1) {
                     edgesData << waypoint1 << " " << waypoint2 << " " << distance << endl;   
                 }
             }
-         }
+          }
         }
-      // Close the file
-      edgesData.close();
 
-      }
-        
-        
+        // Close the file
+      }    
+      
+        edgesData.close();
+
+        string source, destination;
+        int distance;
+
+        ifstream edges(edges_file);
+
+        while(!edges.eof()){
+      
+          edges>>source>>destination>>distance;
+          graph[source].push_back(make_pair(destination,distance));
+        }
+
+
+    edges.close();
+
     }
-
-
-        
 
      void VisitSolver::parseWaypoint(string waypoint_file){
 
@@ -297,62 +311,56 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
 
 
-   
+double VisitSolver::distance_euc( string from, string to, unordered_map<string,vector<pair<string,double>>> graph){
 
+  unordered_map<string,double> dist;
+  string next_node;
+  double next_distance;
 
-
-double VisitSolver::distance_euc( string from, string to, string edges_file){
-
-  // first dumb implementation
-
-  bool found = 0;
-  string prev = to, tmp_init, init = to, middle_wp;
-  double tmp_dist = 0, final_dist = 0;
-  ifstream edgesFile(edges_file);
-
-       if (edgesFile.is_open()){
-
-        while (found != 1){
-
-          // fscanf(edgesFile, "%s %s %f", tmp_init, middle_wp, &tmp_dist);
-
-          edgesFile >> tmp_init >> middle_wp >> tmp_dist;
-
-          //cout << tmp_init << " " << middle_wp << " " << tmp_dist << endl;
-          //sleep(1);
-          //cout << tmp_init << " " << init <<endl;
-
-
-
-          if(tmp_init == init){
-            cout << tmp_init << "Found! " << endl;
-            sleep(2);
-            if(middle_wp == from){
-              found = 1;
-              final_dist += tmp_dist;
-              cout << middle_wp << " " << final_dist << endl;
-              sleep(2);
-            }
-            else if(middle_wp != prev && tmp_dist > 1){
-              cout << tmp_init << " " << tmp_dist << endl;
-              prev = tmp_init;
-              init = middle_wp;
-              cout << middle_wp << "Selected! " << endl;
-              sleep(2);
-              edgesFile.seekg(0);
-              final_dist += tmp_dist;
-            }
-          }
-       }
-       edgesFile.close();
-     }
-
-
-     return final_dist;
+  for (const auto& n : graph){
+    dist[n.first]=999999999;
+  }
   
+  dist[from]=0;
+
+  priority_queue<pair<double,string>, vector<pair<double,string>>, greater<pair<double,string>>> p;
+
+  p.push(make_pair(0,from));
+
+  while(!p.empty()){
+
+    int current_dist=p.top().first;
+    string current_node=p.top().second;
+    
+    p.pop();
+
+    if(current_node==to) {
+
+      cout << from << endl;
+
+      cout << to << endl;
+
+      cout << current_dist <<endl;
+
+      return current_dist;
+    }
+
+    if(current_dist>dist[current_node]) continue;
+
+    for(const auto& g:graph[current_node]){
+      next_node=g.first;
+      next_distance=g.second;
+
+      if(current_dist+next_distance<dist[next_node]){
+        dist[next_node]=current_dist+next_distance;
+        p.push(make_pair(current_dist+next_distance,next_node));
+      }
+    }
+  }
   
-  
- } 
+
+  return 0;
+} 
 
 
 
