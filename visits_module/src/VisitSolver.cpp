@@ -334,16 +334,8 @@ double VisitSolver::distance_euc( string from, string to, unordered_map<string,v
     
     p.pop();
 
-    if(current_node==to) {
+    if(current_node==to) return current_dist;
 
-      cout << from << endl;
-
-      cout << to << endl;
-
-      cout << current_dist <<endl;
-
-      return current_dist;
-    }
 
     if(current_dist>dist[current_node]) continue;
 
