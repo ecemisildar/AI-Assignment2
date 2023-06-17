@@ -234,7 +234,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
      void VisitSolver::createEdges(string edges_file){
 
-    
+    	int k = 0;
       // Open the file
        ofstream edgesData(edges_file);
        if (edgesData.is_open()){
@@ -252,11 +252,13 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
             if (waypoint1 != waypoint2) {
               float distance = sqrt(std::pow((poses1[0]-poses2[0]),2)+ std::pow((poses1[1]-poses2[1]),2));
-                if (distance == 1) {
+                if (distance < 1.5 && k < 4) {
                     edgesData << waypoint1 << " " << waypoint2 << " " << distance << endl;   
+                    k++;
                 }
             }
           }
+          k = 0;
         }
 
         // Close the file
@@ -265,13 +267,15 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
         edgesData.close();
 
         string source, destination;
-        int distance;
+        double distance;
 
         ifstream edges(edges_file);
 
         while(!edges.eof()){
-      
+          
+          //sleep(2);
           edges>>source>>destination>>distance;
+          //cout<< source << " " << destination << " " << distance <<endl; 
           graph[source].push_back(make_pair(destination,distance));
         }
 
@@ -334,11 +338,14 @@ double VisitSolver::distance_euc( string from, string to, unordered_map<string,v
     
     p.pop();
 
-    if(current_node==to) 
-      return current_dist;
+    if(current_node==to){ 
+            cout << "minimal path found with: " << current_dist <<endl; 
+      	    return current_dist;
+      }
 
     for(const auto& g:graph[current_node]){
       next_node=g.first;
+      cout << "current node " << current_node << " next node " << next_node <<endl; 
       next_distance=g.second;
 
       if(dist[next_node]>current_dist+next_distance){

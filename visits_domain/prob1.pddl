@@ -7,18 +7,26 @@
 (:init
     (robot_in R2D2 r0)
     
+    ;(at-assignment r1)
+   ;(at-assignment r2)
+    ;(at-assignment r3)
+    ;(at-assignment r4)
+    
     (= (act-cost) 0)
     (= (dummy) 0)
+    ;(= (collected) 0)
 
  
 )
 
 (:goal 
-     (and (visited r1)
-     	  (visited r2)
-     	  (visited r3)
-     	  (visited r4)
-     	  ;(robot_in R2D2 r5)
+     (and 
+     ;(>= (collected) 2)
+     	(visited r1)
+     	(visited r2)
+     	(visited r3)
+     	(visited r4)
+     	;(robot_in R2D2 r5)
      )
 )
 

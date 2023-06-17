@@ -9,12 +9,24 @@
 (:predicates
 		(robot_in ?v - robot ?r - region)
 		(visited ?r - region)
+		(at-assignment ?r - region)
 	      
 )
 
 (:functions 
-		(act-cost) (triggered ?from ?to - region) (dummy)
+		(act-cost) (triggered ?from ?to - region) (dummy) (collected)
 )
+
+;(:action take-assignment
+ ;       :parameters (?v - robot
+  ;      	     ?r - region)
+   ;     :precondition (and (at-assignment ?r)
+    ;    		(robot_in ?v ?r)
+     ;   		(< (collected) 2))
+      ;  :effect (and (not (at-assignment ?r))
+       ;              (increase (collected) 1))
+    ;)
+    
 
 (:durative-action goto_region
 		:parameters (?v - robot ?from ?to - region)
