@@ -334,16 +334,14 @@ double VisitSolver::distance_euc( string from, string to, unordered_map<string,v
     
     p.pop();
 
-    if(current_node==to) return current_dist;
-
-
-    if(current_dist>dist[current_node]) continue;
+    if(current_node==to) 
+      return current_dist;
 
     for(const auto& g:graph[current_node]){
       next_node=g.first;
       next_distance=g.second;
 
-      if(current_dist+next_distance<dist[next_node]){
+      if(dist[next_node]>current_dist+next_distance){
         dist[next_node]=current_dist+next_distance;
         p.push(make_pair(current_dist+next_distance,next_node));
       }
