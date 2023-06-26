@@ -13,11 +13,9 @@ $ ./run.sh
 
 Documentation
 -------------
-The requirements of the assignment are in the following [pdf file](https://github.com/Carmine00/AI-Assignment1/blob/main/Assignment%20I%20for%20AI4RO2.pdf). 
+The requirements of the assignment are in the following [pdf file](https://github.com/Carmine00/AI-Assignment2/blob/main/Assignment2.pdf). 
 
-Plans generated for each single problem [here](https://github.com/Carmine00/AI-Assignment1/blob/main/ENHSP-Public/Plan.pdf)
-
-Documentation about the project [here](https://github.com/Carmine00/AI-Assignment1/blob/main/AI_report.pdf)
+Documentation about the project [here](https://github.com/Carmine00/AI-Assignment2/blob/main/AI-II_Report.pdf)
 
 
 
