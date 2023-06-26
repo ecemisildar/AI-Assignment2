@@ -9,24 +9,16 @@
 (:predicates
 		(robot_in ?v - robot ?r - region)
 		(visited ?r - region)
-		(at-assignment ?r - region)
+		(at-assignment ?a - assignment ?r - region)
+		(carry ?a - assignment) 
+		(free ?v - robot)
 	      
 )
 
 (:functions 
-		(act-cost) (triggered ?from ?to - region) (dummy) (collected)
+		(act-cost) (triggered ?from ?to - region) (dummy) 
 )
 
-;(:action take-assignment
- ;       :parameters (?v - robot
-  ;      	     ?r - region)
-   ;     :precondition (and (at-assignment ?r)
-    ;    		(robot_in ?v ?r)
-     ;   		(< (collected) 2))
-      ;  :effect (and (not (at-assignment ?r))
-       ;              (increase (collected) 1))
-    ;)
-    
 
 (:durative-action goto_region
 		:parameters (?v - robot ?from ?to - region)
@@ -39,6 +31,34 @@
 				(at end (assign (triggered ?from ?to) 0))  
 				(at end (visited ?to)) 		
                 		(at end (increase (act-cost) (dummy))))
+)
+
+(:action pick_up
+		:parameters (?v - robot ?a - assignment ?r - region)
+		:precondition (and 
+				(at-assignment ?a ?r) 
+				(robot_in ?v ?r)
+				(free ?v))
+		:effect (and 
+				(carry ?a) 
+				(not(at-assignment ?a ?r)) 
+				(not(free ?v)))
+
+
+)
+
+
+(:action drop
+		:parameters (?v - robot ?a - assignment ?r - region)
+		:precondition (and 
+				(robot_in ?v ?r) 
+				(carry ?a))
+		:effect (and 
+				(at-assignment ?a ?r) 
+				(free ?v) 
+				(not(carry ?a)))
+
+
 )
 
 

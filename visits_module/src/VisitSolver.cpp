@@ -42,8 +42,6 @@ unordered_map<string,vector<pair<string,double>>> graph;
 string edges_file = "./visits_domain/edges.txt";
 
 
-    //map <string, vector<double> > region_mapping;
-
 extern "C" ExternalSolver* create_object(){
   return new VisitSolver();
 }
@@ -70,7 +68,7 @@ void VisitSolver::loadSolver(string *parameters, int n){
   affected = list<string>(x,x+1);
   dependencies = list<string>(y,y+2);
 
-  string waypoint_file = "./visits_domain/waypoint.txt";   // change this to the correct path
+  string waypoint_file = "./visits_domain/waypoint.txt";  
 
 
   parseWaypoint(waypoint_file);
@@ -80,7 +78,6 @@ void VisitSolver::loadSolver(string *parameters, int n){
 
 map<string,double> VisitSolver::callExternalSolver(map<string,double> initialState,bool isHeuristic){
 
-  cout << "external called" << endl;
 
   map<string, double> toReturn;
   map<string, double>::iterator iSIt = initialState.begin();
@@ -108,24 +105,21 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
     function.erase(function.length()-1,function.length());
     int n=function.find(" ");
 
-    //cout << "external for loop" << endl;
 
     if(n!=-1){
 
-      //cout << "external n cond" << endl;
       string arg=function;
       string tmp = function.substr(n+1,5);
 
       function.erase(n,function.length()-1);
       arg.erase(0,n+1);
       if(function=="triggered"){
-        //cout << "external triggered" << endl;
         trigger[arg] = value>0?1:0;
         if (value>0){
 
       string from = tmp.substr(0,2);   // from and to are regions, need to extract wps (poses)
       string to = tmp.substr(3,2);
-      //cout << "external inside triggered" << endl;
+      
 
       int counter = 0;
      //Open the file
@@ -150,7 +144,6 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
          }
 
       }
-      std::cout << waypoint_from << " " << waypoint_to << endl;
       // Close the file
       regionData.close();
 
@@ -166,13 +159,9 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 }else{
   if(function=="dummy"){
     dummy = value;
-    //cout << "external dummy" << endl;
-    //cout << "value: " << value << endl;
 
   }else if(function=="act-cost"){
     act_cost = value;
-    //cout << "external act-cost" << endl;
-    //cout << "value: " << value << endl;
                  } //else if(function=="dummy1"){
                     //duy = value;              
                     ////cout << parameter << " " << value << endl;
@@ -247,12 +236,11 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
             const std::string& waypoint2 = pair2.first;
             const std::vector<int>& poses2 = pair2.second;
 
-            //cout << waypoint1 << "," << waypoint2 << endl;
 
 
             if (waypoint1 != waypoint2) {
-              float distance = sqrt(std::pow((poses1[0]-poses2[0]),2)+ std::pow((poses1[1]-poses2[1]),2));
-                if (distance < 1.5 && k < 4) {
+              double distance = sqrt(std::pow((poses1[0]-poses2[0]),2)+ std::pow((poses1[1]-poses2[1]),2));
+                if (distance < 1.5 && k < 5) {
                     edgesData << waypoint1 << " " << waypoint2 << " " << distance << endl;   
                     k++;
                 }
@@ -273,9 +261,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
         while(!edges.eof()){
           
-          //sleep(2);
           edges>>source>>destination>>distance;
-          //cout<< source << " " << destination << " " << distance <<endl; 
           graph[source].push_back(make_pair(destination,distance));
         }
 
@@ -291,7 +277,7 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
        int pose1, pose2;
        ifstream parametersFile(waypoint_file);
        if (parametersFile.is_open()){
-        while (getline(parametersFile,line)){ // ERROR: READING EOF
+        while (getline(parametersFile,line)){ 
          curr=line.find("[");
          string waypoint_name = line.substr(0,curr).c_str();
 
@@ -306,7 +292,6 @@ map<string,double> VisitSolver::callExternalSolver(map<string,double> initialSta
 
 
          fixed_waypoint[waypoint_name] = vector<int> {pose1, pose2};
-         //cout << pose1 << "," << pose2 << "," << waypoint_name << endl;
        }
        parametersFile.close();
      }
@@ -333,19 +318,17 @@ double VisitSolver::distance_euc( string from, string to, unordered_map<string,v
 
   while(!p.empty()){
 
-    int current_dist=p.top().first;
+    double current_dist=p.top().first;
     string current_node=p.top().second;
     
     p.pop();
 
-    if(current_node==to){ 
-            cout << "minimal path found with: " << current_dist <<endl; 
+    if(current_node==to)
       	    return current_dist;
-      }
+      
 
     for(const auto& g:graph[current_node]){
       next_node=g.first;
-      cout << "current node " << current_node << " next node " << next_node <<endl; 
       next_distance=g.second;
 
       if(dist[next_node]>current_dist+next_distance){
